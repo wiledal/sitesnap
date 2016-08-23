@@ -1,4 +1,4 @@
-# Sitesnap
+# Sitesnap [![npm version](https://badge.fury.io/js/sitesnap.svg)](https://badge.fury.io/js/sitesnap)
 
 ## What?
 Basic site screenshotting utility.  
