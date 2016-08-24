@@ -29,16 +29,38 @@ function capture(opts) {
       preload: `${__dirname}/preload.js`
     }
   });
+  var loadFailed = false;
+
+  var outputPath = opts.output;
+
+  // Add .jpg to output path if not exists
+  if (outputPath.indexOf('.jpg') === -1) outputPath += '.jpg';
+
+  // Check if url is using http-protocol
+  if (!opts.url.match(/(http|https)\:\/\//gi)) {
+    process.stderr.end('Not a valid url');
+    app.quit();
+    return;
+  }
 
   console.log(' == Loading url ' + opts.url);
   win.loadURL(opts.url);
+  win.webContents.on('did-fail-load', () => {
+    process.stderr.end('Could not load url');
+    loadFailed = true;
 
-  setTimeout(() => {
+    setTimeout(() => {
+      app.quit();
+    }, 100)
+  })
+
+  win.webContents.on('dom-ready', () => {
+    if (loadFailed) return;
     win.webContents.executeJavaScript(`
       var ipcRenderer = nodeRequire('electron').ipcRenderer;
       ipcRenderer.send('screenshotValues', document.body.offsetHeight);
     `);
-  }, 2000);
+  })
 
   ipc.on('screenshotValues', (event, value) => {
     // Height is set to whatever is set in the options.
@@ -46,13 +68,21 @@ function capture(opts) {
     // If body smaller than 200, minimum of 768 is set
     var height = (opts.height ? opts.height : Math.max(768, Math.min(8000, parseInt(value))));
     win.setContentSize(opts.width, height);
-    console.log(' == Website body height is ' + value + ', viewport set to ' + height);
+    console.log(' == Website body height is ' + value + ', viewport height set to ' + height);
 
+    // Some sites rely on scroll events to load properly, so we trigger one after resize.
+    console.log(' == Triggering scroll event');
+    win.webContents.executeJavaScript(`
+      document.body.dispatchEvent(new CustomEvent('scroll'));
+      window.dispatchEvent(new CustomEvent('scroll'));
+    `);
+
+    console.log(` == Delaying capture by ${opts.delay}ms`)
     setTimeout(() => {
       win.capturePage((data) => {
         console.log(" == Screenshot taken.");
-        console.log(" == Saving image...");
-        fs.writeFile(opts.output, data.toJpeg(100), () => {
+        console.log(" == Saving image: " + outputPath);
+        fs.writeFile(outputPath, data.toJpeg(opts.quality), () => {
           console.log(" == Image saved.");
           app.quit();
         });
