@@ -19,8 +19,8 @@ function capture(opts) {
   let win = new electron.BrowserWindow({
     width: opts.width,
     height: opts.height,
-    x: 9999,
-    y: 9999,
+    x: 99999,
+    y: 99999,
     show: true,
     enableLargerThanScreen: true,
     skipTaskbar: true,
