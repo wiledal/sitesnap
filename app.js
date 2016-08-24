@@ -19,8 +19,6 @@ function capture(opts) {
   let win = new electron.BrowserWindow({
     width: opts.width,
     height: opts.height,
-    x: 99999,
-    y: 99999,
     show: true,
     enableLargerThanScreen: true,
     skipTaskbar: true,
@@ -47,7 +45,8 @@ function capture(opts) {
 
   console.log(' == Loading url ' + opts.url);
   win.loadURL(opts.url);
-  win.webContents.on('did-fail-load', () => {
+  win.webContents.on('did-fail-load', (event, code, desc) => {
+    console.log(' == Load error: ' + desc);
     process.stderr.end('Could not load url');
     loadFailed = true;
 
