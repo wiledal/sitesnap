@@ -12,7 +12,8 @@ Outputs a high quality retina jpg.
 ## Usage
 `sitesnap <url> <output.jpg> [--options]`
 
-Run `sitesnap --help` for full list of options.
+Run `sitesnap --help` for full list of options.  
+If no `--height` is supplied, `sitesnap` will try to snap the full length of the page.
 
 ## Example usage
 Using options: `sitesnap http://github.com github.jpg --height 320 --width 320 --delay 6000`  
@@ -26,6 +27,5 @@ apt-get update
 apt-get install -y libgtk2.0-0 libgconf-2-4 libasound2 libxtst6 libxss1 libnss3 xvfb
 
 # Start Xvfb
-Xvfb -ac -screen scrn 1280x2000x24 :9.0
-export DISPLAY=:9.0
+Xvfb -ac -screen scrn 1280x2000x24 :9.0 & export DISPLAY=:9.0
 ```
