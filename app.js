@@ -48,6 +48,7 @@ function capture(opts) {
   console.log(' == Loading url ' + opts.url);
   win.loadURL(opts.url);
   win.webContents.on('did-fail-load', (event, code, desc) => {
+    if (desc === 'OK') return;
     console.log(' == Load error: ' + desc);
     process.stderr.end('Could not load url');
     loadFailed = true;
