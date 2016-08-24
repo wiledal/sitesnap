@@ -17,8 +17,10 @@ app.on('ready', () => {
 
 function capture(opts) {
   let win = new electron.BrowserWindow({
-    width: 200,
-    height: 200,
+    width: opts.width,
+    height: opts.height,
+    x: 99999,
+    y: 99999,
     show: true,
     enableLargerThanScreen: true,
     skipTaskbar: true,
@@ -57,8 +59,15 @@ function capture(opts) {
   win.webContents.on('dom-ready', () => {
     if (loadFailed) return;
     win.webContents.executeJavaScript(`
+      var height = Math.max(
+        document.body.scrollHeight,
+        document.body.offsetHeight,
+        document.documentElement.clientHeight,
+        document.documentElement.scrollHeight,
+        document.documentElement.offsetHeight
+      );
       var ipcRenderer = nodeRequire('electron').ipcRenderer;
-      ipcRenderer.send('screenshotValues', document.body.offsetHeight);
+      ipcRenderer.send('screenshotValues', height);
     `);
   })
 
