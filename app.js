@@ -60,7 +60,15 @@ function capture(opts) {
 
   win.webContents.on('dom-ready', () => {
     if (loadFailed) return;
+
+    // Get the height and apply white background as default
     win.webContents.executeJavaScript(`
+      try {
+        var style = document.createElement('style');
+        style.innerHTML = 'body { background: #fff; } ::-webkit-scrollbar { display: none; }';
+        document.head.insertBefore(style, document.head.firstChild);
+      }catch(e) {}
+
       var height = Math.max(
         document.body.scrollHeight,
         document.body.offsetHeight,
