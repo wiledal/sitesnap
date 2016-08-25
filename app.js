@@ -31,8 +31,8 @@ function capture(opts) {
       preload: `${__dirname}/preload.js`
     }
   });
-  var loadFailed = false;
 
+  var loadFailed = false;
   var outputPath = opts.output;
 
   // Add .jpg to output path if not exists
