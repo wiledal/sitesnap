@@ -58,30 +58,14 @@ function capture(opts) {
     }, 100)
   })
 
-  win.webContents.on('dom-ready', () => {
+  win.webContents.on('did-finish-load', () => {
     if (loadFailed) return;
-
     // Get the height and apply white background as default
-    win.webContents.executeJavaScript(`
-      try {
-        var style = document.createElement('style');
-        style.innerHTML = 'body { background: #fff; } ::-webkit-scrollbar { display: none; }';
-        document.head.insertBefore(style, document.head.firstChild);
-      }catch(e) {}
-
-      var height = Math.max(
-        document.body.scrollHeight,
-        document.body.offsetHeight,
-        document.documentElement.clientHeight,
-        document.documentElement.scrollHeight,
-        document.documentElement.offsetHeight
-      );
-      var ipcRenderer = nodeRequire('electron').ipcRenderer;
-      ipcRenderer.send('screenshotValues', height);
-    `);
+    win.webContents.send('injectBaseStyles');
+    win.webContents.send('getContentHeight');
   })
 
-  ipc.on('screenshotValues', (event, value) => {
+  ipc.on('getContentHeightReturn', (event, value) => {
     // Height is set to whatever is set in the options.
     // If height is not set, scale to the size of the body
     // If body smaller than 200, minimum of 768 is set
@@ -89,23 +73,26 @@ function capture(opts) {
     win.setContentSize(opts.width, height);
     console.log(' == Website body height is ' + value + ', viewport height set to ' + height);
 
-    // Some sites rely on scroll events to load properly, so we trigger one after resize.
-    console.log(' == Triggering scroll event');
-    win.webContents.executeJavaScript(`
-      document.body.dispatchEvent(new CustomEvent('scroll'));
-      window.dispatchEvent(new CustomEvent('scroll'));
-    `);
+    win.webContents.send('waitOneFrame');
+    ipc.once('waitOneFrameReturn', () => {
+      // Some sites rely on scroll events to load properly, so we trigger one after resize.
+      console.log(' == Triggering scroll event');
+      win.webContents.executeJavaScript(`
+        document.body.dispatchEvent(new CustomEvent('scroll'));
+        window.dispatchEvent(new CustomEvent('scroll'));
+      `);
 
-    console.log(` == Delaying capture by ${opts.delay}ms`)
-    setTimeout(() => {
-      win.capturePage((data) => {
-        console.log(" == Screenshot taken.");
-        console.log(" == Saving image: " + outputPath);
-        fs.writeFile(outputPath, data.toJpeg(opts.quality), () => {
-          console.log(" == Image saved.");
-          app.quit();
-        });
-      })
-    }, opts.delay)
+      console.log(` == Delaying capture by ${opts.delay}ms`)
+      setTimeout(() => {
+        win.capturePage((data) => {
+          console.log(" == Screenshot taken.");
+          console.log(" == Saving image: " + outputPath);
+          fs.writeFile(outputPath, data.toJpeg(opts.quality), () => {
+            console.log(" == Image saved.");
+            app.quit();
+          });
+        })
+      }, opts.delay)
+    })
   })
 }
