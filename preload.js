@@ -7,7 +7,7 @@ var ipc = nodeRequire('electron').ipcRenderer;
 ipc.on('injectBaseStyles', () => {
   try {
     var style = document.createElement('style');
-    style.innerHTML = 'body { background: #fff; } ::-webkit-scrollbar { display: none; }';
+    style.innerHTML = '::-webkit-scrollbar { display: none; }';
     document.head.insertBefore(style, document.head.firstChild);
   }catch(e) {}
 });

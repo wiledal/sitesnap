@@ -17,6 +17,7 @@ app.on('ready', () => {
 
 function capture(opts) {
   let win = new electron.BrowserWindow({
+    backgroundColor: "#fff",
     width: opts.width,
     height: opts.height,
     x: 99999,
