@@ -16,16 +16,13 @@ Outputs a high quality retina jpg.
 ## Usage
 `sitesnap <url> <output.jpg> [--options]`
 
-If no `--height` is supplied, `sitesnap` will try to snap the full length of the page.  
+If no `--height` is supplied, `sitesnap` will try to snap the full length of the page (capped at 8000px).  
 
 **Run `sitesnap --help` for full list of options.**
 
 ## Example usage
-Take a 500px wide retina screenshot of github.com, and save as `githubscreenshot.jpg`:  
-`sitesnap http://github.com githubscreenshot --width 500`
-
-Take a 1200x1200 screenshot of newgrounds.com at 1x scale (non-retina) and 50% quality:  
-`sitesnap http://github.com githubscreenshot --height 500 --quality 50 --scalefactor 1`
+Take a 1200x1200 screenshot of github.com at 1x scale (non-retina) and 50% quality:  
+`sitesnap http://github.com screenshot-output.jpg --height 500 --quality 50 --scalefactor 1`
 
 ## Headless usage
 To use `sitesnap` on a headless server you need some kind of display driver such as Xvfb.
