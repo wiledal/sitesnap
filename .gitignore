@@ -2,3 +2,4 @@ node_modules
 .vagrant
 Vagrantfile
 *.jpg
+.DS_Store

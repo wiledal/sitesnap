@@ -4,8 +4,6 @@ const fs = require('fs');
 const yargs = require('yargs');
 const spawn = require('child_process').spawn;
 
-const electron = require('electron-prebuilt');
-
 var argv = yargs.argv;
 
 var url = argv._[0];
@@ -50,7 +48,7 @@ if (!url || !output) {
   process.exit();
 }
 
-var child = spawn(electron, [__dirname + '/app.js', '--force-device-scale-factor=' + scaleFactor], {
+var child = spawn('node_modules/.bin/electron', [__dirname + '/app.js', '--force-device-scale-factor=' + scaleFactor], {
   stdio: ['pipe', process.stdout, process.stderr]
 });
 
