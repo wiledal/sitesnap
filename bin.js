@@ -48,7 +48,7 @@ if (!url || !output) {
   process.exit();
 }
 
-var child = spawn('node_modules/.bin/electron', [__dirname + '/app.js', '--force-device-scale-factor=' + scaleFactor], {
+var child = spawn(__dirname + '/node_modules/.bin/electron', [__dirname + '/app.js', '--force-device-scale-factor=' + scaleFactor], {
   stdio: ['pipe', process.stdout, process.stderr]
 });
 
